@@ -138,7 +138,7 @@ When setting the inverse matrix as the initial matrix in object B with the `setm
 
 #### Failure test with non-invertible matrix
 
-When using a non-invertible matrix for A then the `cacheSolve)()` function fails in the same way as the basic `solve()` function does:
+When using a non-invertible matrix for A then the `cacheSolve()` function fails in the same way as the basic `solve()` function does:
 
       > a=1:5
       > b=3:7
