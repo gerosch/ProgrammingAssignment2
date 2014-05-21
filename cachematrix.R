@@ -2,7 +2,7 @@
 ## Coursera Course: R Programming                                            ##
 ## Programming Assignment 02                                                 ##
 ###############################################################################
-## R ##### Author: Gero Schmidt ###### Version: 1.00 ###### Date: 2014-05-20 ##
+## R ##### Author: Gero Schmidt ###### Version: 1.01 ###### Date: 2014-05-20 ##
 ###############################################################################
 ## This code provides a pair of functions that cache the inverse of a matrix ##
 ## ------------------------------------------------------------------------- ##
@@ -15,7 +15,7 @@
 ##   not changed since then cacheSolve() retrieves the inverse from the      ##
 ##   object instead of recalculating it (using the cached value).            ##
 ##   Note: Like the underlying basic function solve() this function will     ##
-##         exit with an error if the matrix is singular, i.e. not invertible ##
+##         exit with an error if the matrix is singular, i.e. non-invertible ##
 ## ------------------------------------------------------------------------- ##
 ## For this assignment, assume that the matrix supplied is always invertible ##
 ###############################################################################
@@ -37,18 +37,26 @@
 ## Creates a special "matrix" object that can cache its inverse 
 ## object$getmat()         : returns stored matrix
 ## object$setmat(matrix)   : stores matrix in object
-## object$getinv()         : returns cached inverse of the matrix (returns NULL if undefined/not set)
+## object$getinv()         : returns cached inverse of the matrix (returns NULL if undefined, not yet set or matrix changed)
 ## object$setinv(inverse)  : stores inverse of the matrix in object  
 makeCacheMatrix <- function(x = matrix()) {
+  # Set inverse to NULL as default
   x_inv <- NULL
+  # Define setmat() function to store provided matrix y in object as matrix x 
+  # Clear inverse matrix x_inv
   setmat <- function(y) {
     x <<- y
     x_inv <<- NULL
   }
+  # Define getmat() function to retrieve stored matrix x from object
   getmat <- function() x
+  # Define setinv() function to store calculated inverse in object as x_inv
   setinv <- function(inverse) x_inv <<- inverse
+  # Define getinv() function to retrieve stored inverse from object
   getinv <- function() x_inv
-  list(setmat = setmat, getmat = getmat,
+  # Return defined functions for object
+  list(setmat = setmat, 
+       getmat = getmat,
        setinv = setinv,
        getinv = getinv)
 }
@@ -56,21 +64,25 @@ makeCacheMatrix <- function(x = matrix()) {
 ## ------------
 ## cacheSolve()
 ## ------------
-## Computes the inverse of the matrix stored in the special "matrix" object returned by makeCacheMatrix()
-## If the inverse has already been calculated and the matrix has not changed then 
-## the cacheSolve() retrieves the inverse matrix from the cache   
+## Computes the inverse of the matrix stored in the special "matrix" object created by 
+## makeCacheMatrix(). If the inverse has already been calculated and stored in the special 
+## "matrix" object and the matrix has not changed since then cacheSolve() retrieves the 
+## inverse from the object instead of recalculating it (using the cached value).
+## Note: Like the underlying basic function solve() this function will exit with an error 
+##       if the matrix is singular, i.e. non-invertible
 cacheSolve <- function(x, ...) {
   inverse <- x$getinv()
-  # Check if inverse matrix is already chached in object from previous calculation
-  # YES (inverse<>NULL): return cached value of inverse matrix
+  # Check if inverse is already chached in object from previous calculation
+  # YES (inverse<>NULL): Return cached inverse from object
   if(!is.null(inverse)) {
     message("getting cached data")
     return(inverse)
   }
-  # NO (inverse==NULL): compute inverse of matrix, store result in object and return inverse
+  # NO (inverse==NULL): Compute inverse and store calculated inverse in object
   message("newly calculating data")
   matrix <- x$getmat()
   inverse <- solve(matrix, ...)
   x$setinv(inverse)
+  # Return calculated inverse
   inverse
 }
